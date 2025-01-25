@@ -1,6 +1,6 @@
 
 
-FROM golang:alpine as builder
+FROM golang:alpine AS builder
 LABEL maintainers="Jakes Lee; Toss Pig"
 LABEL description="iKuai exporter"
 

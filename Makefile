@@ -1,16 +1,17 @@
-.PHONY: run build wasm ci
+.PHONY: run build builder
 
 -include .env
 ROOT_DIR:=$(abspath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
 DIST_DIR=$(ROOT_DIR)/dist
 BINARY:=$(DIST_DIR)/$(PROJECTNAME)$(shell go env GOEXE)
 GITTAG:=$(shell git describe --tags || echo 'unknown')
-GITVERSION:=$(shell git rev-parse HEAD)
+GITVERSION:=$(shell git rev-parse HEAD || ${GITHUB_SHA})
 PACKAGES:=$(shell go list ./... | grep -v /vendor/)
 VETPACKAGES=`go list ./... | grep -v /vendor/ | grep -v /examples/`
 GOFILES=`find . -name "*.go" -type f -not -path "./vendor/*"`
+GOLANG_VER:=$(shell go env GOVERSION)
 BUILD_TIME=`date +%FT%T%z`
-BUILD_USER=`echo "BID/${CI_BUILD_ID} PID/${CI_PIPELINE_ID} NAME/${PROJECTNAME} SLUG/${CI_BUILD_REF_SLUG} USER/${GITLAB_USER_EMAIL} RUNNER/${CI_RUNNER_DESCRIPTION} BUILDER/${GOLANG_VERSION}"`
+BUILD_USER=`echo "BID/${CI_BUILD_ID:-GITHUB_RUN_ID} PID/${CI_PIPELINE_ID:-GITHUB_RUN_NUMBER} NAME/${PROJECTNAME} SLUG/${CI_BUILD_REF_SLUG} USER/${GITLAB_USER_EMAIL:-GITHUB_WORKFLOW_SHA} RUNNER/${CI_RUNNER_DESCRIPTION:-RUNNER_NAME} BUILDER/${GOLANG_VERSION:-GOLANG_VER}"`
 BUILD_VERSION=`echo "TAG/${GITTAG} GIT/${GITVERSION} NAME/${PROJECTNAME} CCT/${CI_COMMIT_TAG}"`
 LDFLAGS=-ldflags "-s -w -X 'main.projectName=$(PROJECTNAME)' -X 'main.gitVersion=${GITVERSION}' -X 'main.buildTime=${BUILD_TIME}' -X 'main.buildVersion=${BUILD_VERSION}' -X 'main.buildUser=${BUILD_USER}' -X 'main.version=$(VERSION)'"
 GOBUILD=go build -trimpath
