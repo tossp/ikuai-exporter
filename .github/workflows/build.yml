@@ -54,8 +54,7 @@ jobs:
           go build  -o /tmp/ ./cmd/app
           make builder || true
           if [ "${{matrix.jobs.goos}}" = "windows" ]; then
-            cp dist/ikuai-exporter.exe ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.exe
-            zip -r dist/ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.zip ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.exe
+            zip -rj ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.zip dist/ikuai-exporter-*.exe
           else
             cp dist/ikuai-exporter dist/ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}
             gzip -c dist/ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}} > ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.gz
