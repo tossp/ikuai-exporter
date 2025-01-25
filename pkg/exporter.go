@@ -127,8 +127,6 @@ func (i *IKuaiExporter) Collect(metrics chan<- prometheus.Metric) {
 
 	if len(sysStat.Cputemp) > 0 {
 		metrics <- prometheus.MustNewConstMetric(i.cpuTempDesc, prometheus.GaugeValue, float64(sysStat.Cputemp[0]))
-	} else {
-		log.Printf("sysStat.Cputemp is empty")
 	}
 
 	for idx, item := range sysStat.Cpu {
