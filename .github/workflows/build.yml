@@ -34,6 +34,7 @@ jobs:
           - { goos: linux, goarch: loong64, output: loong64 }
           - { goos: linux, goarch: riscv64, output: riscv64 }
 
+          - { goos: windows, goarch: "386", output: "386" }
           - { goos: windows, goarch: amd64, output: amd64 }
 
     steps:
@@ -54,7 +55,8 @@ jobs:
           go build  -o /tmp/ ./cmd/app
           make builder || true
           if [ "${{matrix.jobs.goos}}" = "windows" ]; then
-            zip -rj ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.zip dist/ikuai-exporter-*.exe
+            cp dist/ikuai-exporter.exe ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.exe
+            zip -rj ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.zip ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.exe
           else
             cp dist/ikuai-exporter dist/ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}
             gzip -c dist/ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}} > ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.gz
