@@ -2,12 +2,14 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/jakeslee/ikuai"
-	"github.com/jakeslee/ikuai/action"
-	"github.com/prometheus/client_golang/prometheus"
 	"log"
 	"strconv"
 	"time"
+
+	"github.com/tossp/ikuai"
+	"github.com/tossp/ikuai/action"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 type IKuaiExporter struct {

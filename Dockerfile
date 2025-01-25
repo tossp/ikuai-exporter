@@ -1,15 +1,21 @@
 
 
-FROM jakes/base-image:alpine-3.14.0-tz
-LABEL maintainers="Jakes Lee"
+FROM golang:alpine as builder
+LABEL maintainers="Jakes Lee; Toss Pig"
 LABEL description="iKuai exporter"
-ARG TARGETPLATFORM
 
-ADD ./output /output
-RUN cp /output/"$TARGETPLATFORM"/app /app
+RUN apk add --no-cache make g++ git upx
 
-EXPOSE 9090
-WORKDIR /data
+WORKDIR /tmp/go-app
 
-RUN chmod +x /app
-CMD ["/app"]
+ADD go.mod go.sum ./
+RUN go mod download
+
+ADD . .
+RUN make builder
+
+FROM alpine
+RUN apk add ca-certificates
+COPY --from=builder /tmp/go-app/dist/ikuai-exporter /app/ikuai-exporter
+WORKDIR /app
+ENTRYPOINT [ "/app/ikuai-exporter" ]

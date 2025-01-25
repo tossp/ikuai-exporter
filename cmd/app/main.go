@@ -1,13 +1,15 @@
 package main
 
 import (
-	"github.com/alexflint/go-arg"
-	"github.com/jakeslee/ikuai"
-	"github.com/jakeslee/ikuai-exporter/pkg"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"net/http"
+
+	"github.com/tossp/ikuai"
+	"github.com/tossp/ikuai-exporter/pkg"
+
+	"github.com/alexflint/go-arg"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Config struct {
@@ -19,13 +21,27 @@ type Config struct {
 }
 
 var (
-	version   string
-	buildTime string
+	projectName  string
+	gitVersion   string
+	buildVersion string
+	buildTime    string
+	buildUser    string
+	version      string
 )
 
 func main() {
+	log.Println("iKuai Exporter", version)
 	config := &Config{}
 	arg.MustParse(config)
+
+	if config.Debug {
+		log.Println("iKuai 开启 debug 日志")
+		log.Println("Project name:", projectName)
+		log.Println("Git version:", gitVersion)
+		log.Println("Build version:", buildVersion)
+		log.Println("Build time:", buildTime)
+		log.Println("Build user:", buildUser)
+	}
 
 	i := ikuai.NewIKuai(config.Ikuai, config.IkuaiUsername, config.IkuaiPassword, config.InsecureSkip, true)
 
