@@ -1,10 +1,8 @@
-
-
 FROM golang:alpine AS builder
-LABEL maintainers="Jakes Lee; Toss Pig"
-LABEL description="iKuai exporter"
+ARG TARGETPLATFORM
+RUN echo "I'm building for $TARGETPLATFORM"
 
-RUN apk add --no-cache make g++ git upx
+RUN apk add --no-cache gzip make g++ git upx
 
 WORKDIR /tmp/go-app
 
@@ -14,8 +12,8 @@ RUN go mod download
 ADD . .
 RUN make builder
 
-FROM alpine
-RUN apk add ca-certificates
+FROM alpine:latest
+RUN apk add --no-cache ca-certificates tzdata
 COPY --from=builder /tmp/go-app/dist/ikuai-exporter /app/ikuai-exporter
 WORKDIR /app
 ENTRYPOINT [ "/app/ikuai-exporter" ]

@@ -5,7 +5,7 @@ ROOT_DIR:=$(abspath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
 DIST_DIR=$(ROOT_DIR)/dist
 BINARY:=$(DIST_DIR)/$(PROJECTNAME)$(shell go env GOEXE)
 GITTAG:=$(shell git describe --tags || echo 'unknown')
-GITVERSION:=$(shell git rev-parse HEAD || ${GITHUB_SHA})
+GITVERSION:=$(shell git rev-parse HEAD || echo ${GITHUB_SHA})
 PACKAGES:=$(shell go list ./... | grep -v /vendor/)
 VETPACKAGES=`go list ./... | grep -v /vendor/ | grep -v /examples/`
 GOFILES=`find . -name "*.go" -type f -not -path "./vendor/*"`
@@ -22,8 +22,8 @@ all: run
 build:
 	@echo " > Building binary(windows)..."
 	env CGO_ENABLED=1 GOOS=windows GOARCH=amd64 ${GOBUILD} ${LDFLAGS} -race -o ${BINARY} ./cmd/app
-	@#echo " > Building binary(linux)..."
-	@#env CGO_ENABLED=1 GOOS=linux GOARCH=amd64 ${GOBUILD} ${LDFLAGS} -race -o ${BINARY} ./cmd/app
+	# @echo " > Building binary(linux)..."
+	# @env CGO_ENABLED=1 GOOS=linux GOARCH=amd64 ${GOBUILD} ${LDFLAGS} -race -o $(DIST_DIR)/$(PROJECTNAME) ./cmd/app
 
 builder:
 	@#echo " > Building binary..."

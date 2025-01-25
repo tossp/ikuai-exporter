@@ -5,17 +5,19 @@ on:
     branches:
       - main
     tags:
-      - 'v*'
+      - "v*"
     paths:
-      - '.github/workflows/composer.yml'
-      - 'Dockerfile'
-      - 'go.mod'
-      - 'go.sum'
-      - '**/*.go'
+      - ".github/workflows/composer.yml"
+      - "Dockerfile"
+      - "go.mod"
+      - "go.sum"
+      - "**/*.go"
   pull_request:
     branches:
-      - 'main'
+      - "main"
 
+env:
+  TZ: Asia/Shanghai
 jobs:
   buildx:
     runs-on: ubuntu-latest

@@ -1,0 +1,95 @@
+name: 编译构建
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+    paths:
+      - ".github/workflows/build.yml"
+      - "go.mod"
+      - "go.sum"
+      - "**/*.go"
+  pull_request:
+    branches:
+      - "main"
+
+env:
+  TZ: Asia/Shanghai
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        jobs:
+          - { goos: darwin, goarch: arm64, output: arm64 }
+          - { goos: darwin, goarch: amd64, goamd64: v1, output: amd64-compatible }
+          - { goos: darwin, goarch: amd64, goamd64: v3, output: amd64 }
+
+          - { goos: linux, goarch: '386', output: '386' }
+          - { goos: linux, goarch: amd64, goamd64: v1, output: amd64-compatible, test: test }
+          - { goos: linux, goarch: amd64, goamd64: v3, output: amd64 }
+          - { goos: linux, goarch: arm64, output: arm64 }
+          - { goos: linux, goarch: arm, goarm: '5', output: armv5 }
+          - { goos: linux, goarch: arm, goarm: '6', output: armv6 }
+          - { goos: linux, goarch: arm, goarm: '7', output: armv7 }
+          - { goos: linux, goarch: mips, gomips: hardfloat, output: mips-hardfloat }
+          - { goos: linux, goarch: mips, gomips: softfloat, output: mips-softfloat }
+          - { goos: linux, goarch: mipsle, gomips: hardfloat, output: mipsle-hardfloat }
+          - { goos: linux, goarch: mipsle, gomips: softfloat, output: mipsle-softfloat }
+          - { goos: linux, goarch: mips64, output: mips64 }
+          - { goos: linux, goarch: mips64le, output: mips64le }
+          - { goos: linux, goarch: loong64, output: loong64 }
+          - { goos: linux, goarch: riscv64, output: riscv64 }
+          - { goos: linux, goarch: s390x, output: s390x }
+
+          - { goos: windows, goarch: '386', output: '386' }
+          - { goos: windows, goarch: amd64, goamd64: v1, output: amd64-compatible }
+          - { goos: windows, goarch: amd64, goamd64: v3, output: amd64 }
+          - { goos: windows, goarch: arm, goarm: '7', output: armv7 }
+          - { goos: windows, goarch: arm64, output: arm64 }
+
+          - { goos: freebsd, goarch: '386', output: '386' }
+          - { goos: freebsd, goarch: amd64, goamd64: v1, output: amd64-compatible }
+          - { goos: freebsd, goarch: amd64, goamd64: v3, output: amd64 }
+          - { goos: freebsd, goarch: arm64, output: arm64 }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 设置 Go 版本
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: 安装依赖
+        run: sudo apt-get install make upx
+
+      - name: 编译
+        env:
+          GOOS: ${{matrix.jobs.goos}}
+          GOARCH: ${{matrix.jobs.goarch}}
+          GOAMD64: ${{matrix.jobs.goamd64}}
+          GOARM: ${{matrix.jobs.goarm}}
+          GOMIPS: ${{matrix.jobs.gomips}}
+        run: |
+          make builder
+          if [ "${{matrix.jobs.goos}}" = "windows" ]; then
+            cp dist/ikuai-exporter.exe ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.exe
+            zip -r dist/ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.zip ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.exe
+          else
+            cp dist/ikuai-exporter dist/ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}
+            gzip -c dist/ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}} > ikuai-exporter-${{matrix.jobs.goos}}-${{matrix.jobs.output}}.gz
+          fi
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ matrix.jobs.goos }}-${{ matrix.jobs.output }}"
+          path: |
+            ikuai-exporter*.gz
+            ikuai-exporter*.zip
+
+      - name: 删除旧的工作流
+        uses: Mattraks/delete-workflow-runs@main
