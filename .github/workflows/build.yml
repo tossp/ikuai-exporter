@@ -73,8 +73,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: Release ${{ github.sha }}
-          body: 由提交${{ github.sha }}自动触发编译生成的Release。
           files: |
             ikuai-exporter*.gz
             ikuai-exporter*.zip
