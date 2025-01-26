@@ -153,7 +153,7 @@ func (i *IKuaiExporter) Collect(metrics chan<- prometheus.Metric) {
 		for _, device := range lanDevice.Data.Data {
 			deviceId := fmt.Sprintf("device/%v", device.Mac)
 
-			if i, has := devices[deviceId]; !has {
+			if i, has := devices[deviceId]; has {
 				i.TotalUp += device.TotalUp
 				i.TotalDown += device.TotalDown
 				i.Upload += device.Upload

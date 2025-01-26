@@ -33,7 +33,7 @@ builder:
 
 run:  build
 	@echo " > exec..."
-	${BINARY} --debug
+	${BINARY} --debug ${HOST_OPT}
 
 debug: fmt
 	@echo " > Install debug..."
