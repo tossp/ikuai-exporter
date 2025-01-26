@@ -148,18 +148,18 @@ func (i *IKuaiExporter) Collect(metrics chan<- prometheus.Metric) {
 	if isFail(&lanDevice.Result, err) {
 		log.Printf("ikuai ShowMonitorLan: %v, %+v", err, lanDevice.Result)
 	} else {
-		devices := make(map[string]*action.LanDeviceInfo)
+		devices := make(map[string]*action.LanDeviceInfo, len(lanDevice.Data.Data))
 
 		for _, device := range lanDevice.Data.Data {
 			deviceId := fmt.Sprintf("device/%v", device.Mac)
 
-			if _, has := devices[deviceId]; has {
-				devices[deviceId].TotalUp += device.TotalUp
-				devices[deviceId].TotalDown += device.TotalDown
-				devices[deviceId].Upload += device.Upload
-				devices[deviceId].Download += device.Download
-				devices[deviceId].ConnectNum += device.ConnectNum
-				// devices[deviceId].IPAddr += "|" + device.IPAddr
+			if i, has := devices[deviceId]; !has {
+				i.TotalUp += device.TotalUp
+				i.TotalDown += device.TotalDown
+				i.Upload += device.Upload
+				i.Download += device.Download
+				i.ConnectNum += device.ConnectNum
+				// i.IPAddr += "|" + device.IPAddr
 			} else {
 				devices[deviceId] = &device
 			}
