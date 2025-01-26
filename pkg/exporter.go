@@ -44,39 +44,39 @@ type IKuaiExporter struct {
 func NewIKuaiExporter(kuai *ikuai.IKuai) *IKuaiExporter {
 	return &IKuaiExporter{
 		ikuai: kuai,
-		versionDesc: prometheus.NewDesc("ikuai_version", "IKuai version info",
+		versionDesc: prometheus.NewDesc("ikuai_version", "爱快版本",
 			[]string{"version", "arch", "verstring"}, nil),
-		cpuUsageRatioDesc: prometheus.NewDesc("ikuai_cpu_usage_ratio", "IKuai CPU usage ratio",
+		cpuUsageRatioDesc: prometheus.NewDesc("ikuai_cpu_usage_ratio", "CPU 占用率",
 			[]string{"id"}, nil),
-		cpuTempDesc: prometheus.NewDesc("ikuai_cpu_temperature", "",
+		cpuTempDesc: prometheus.NewDesc("ikuai_cpu_temperature", "CPU 温度",
 			nil, nil),
-		memSizeDesc: prometheus.NewDesc("ikuai_memory_size_bytes", "",
+		memSizeDesc: prometheus.NewDesc("ikuai_memory_size_bytes", "内存大小",
 			[]string{}, nil),
-		memUsageDesc: prometheus.NewDesc("ikuai_memory_usage_bytes", "",
+		memUsageDesc: prometheus.NewDesc("ikuai_memory_usage_bytes", "内存使用",
 			[]string{}, nil),
-		memCachedDesc: prometheus.NewDesc("ikuai_memory_cached_bytes", "",
+		memCachedDesc: prometheus.NewDesc("ikuai_memory_cached_bytes", "内存缓存",
 			[]string{}, nil),
-		memBuffersDesc: prometheus.NewDesc("ikuai_memory_buffers_bytes", "",
+		memBuffersDesc: prometheus.NewDesc("ikuai_memory_buffers_bytes", "内存缓冲区",
 			[]string{}, nil),
-		lanDeviceDesc: prometheus.NewDesc("ikuai_device_info", "ikuai_device_info",
+		lanDeviceDesc: prometheus.NewDesc("ikuai_device_info", "内网终端信息",
 			[]string{"id", "mac", "hostname", "ip_addr", "comment"}, nil),
-		lanDeviceCountDesc: prometheus.NewDesc("ikuai_device_count", "",
+		lanDeviceCountDesc: prometheus.NewDesc("ikuai_device_count", "内网终端数量",
 			[]string{}, nil),
-		ifaceInfoDesc: prometheus.NewDesc("ikuai_iface_info", "",
+		ifaceInfoDesc: prometheus.NewDesc("ikuai_iface_info", "接口信息",
 			[]string{"id", "interface", "comment", "internet", "parent_interface", "ip_addr"}, nil),
-		UpDesc: prometheus.NewDesc("ikuai_up", "",
+		UpDesc: prometheus.NewDesc("ikuai_up", "在线状态",
 			[]string{"id"}, nil),
-		UpTimeDesc: prometheus.NewDesc("ikuai_uptime", "",
+		UpTimeDesc: prometheus.NewDesc("ikuai_uptime", "在线时间",
 			[]string{"id"}, nil),
-		streamUpBytesDesc: prometheus.NewDesc("ikuai_network_send_bytes", "",
+		streamUpBytesDesc: prometheus.NewDesc("ikuai_network_send_bytes", "流量上行数据包",
 			[]string{"id"}, nil),
-		streamDownBytesDesc: prometheus.NewDesc("ikuai_network_recv_bytes", "",
+		streamDownBytesDesc: prometheus.NewDesc("ikuai_network_recv_bytes", "流量下行数据包",
 			[]string{"id"}, nil),
-		streamUpSpeedDesc: prometheus.NewDesc("ikuai_network_send_kbytes_per_second", "",
+		streamUpSpeedDesc: prometheus.NewDesc("ikuai_network_send_kbytes_per_second", "流量上行速度",
 			[]string{"id"}, nil),
-		streamDownSpeedDesc: prometheus.NewDesc("ikuai_network_recv_kbytes_per_second", "",
+		streamDownSpeedDesc: prometheus.NewDesc("ikuai_network_recv_kbytes_per_second", "流量下行速度",
 			[]string{"id"}, nil),
-		connCountDesc: prometheus.NewDesc("ikuai_network_conn_count", "",
+		connCountDesc: prometheus.NewDesc("ikuai_network_conn_count", "连接数",
 			[]string{"id"}, nil),
 	}
 }
@@ -120,7 +120,7 @@ func (i *IKuaiExporter) Collect(metrics chan<- prometheus.Metric) {
 
 	sysStat := stat.Data.SysStat
 
-	metrics <- prometheus.MustNewConstMetric(i.versionDesc, prometheus.CounterValue, 1,
+	metrics <- prometheus.MustNewConstMetric(i.versionDesc, prometheus.GaugeValue, 1,
 		sysStat.Verinfo.Version,
 		sysStat.Verinfo.Arch,
 		sysStat.Verinfo.Verstring)
@@ -133,7 +133,7 @@ func (i *IKuaiExporter) Collect(metrics chan<- prometheus.Metric) {
 		s := item[:len(item)-1]
 		per, _ := strconv.ParseFloat(s, 64)
 
-		metrics <- prometheus.MustNewConstMetric(i.cpuUsageRatioDesc, prometheus.GaugeValue, per/100,
+		metrics <- prometheus.MustNewConstMetric(i.cpuUsageRatioDesc, prometheus.GaugeValue, per,
 			fmt.Sprintf("core/%v", idx))
 	}
 
@@ -166,13 +166,13 @@ func (i *IKuaiExporter) Collect(metrics chan<- prometheus.Metric) {
 		}
 
 		for deviceId, device := range devices {
-			metrics <- prometheus.MustNewConstMetric(i.lanDeviceDesc, prometheus.CounterValue, 1,
+			metrics <- prometheus.MustNewConstMetric(i.lanDeviceDesc, prometheus.GaugeValue, 1,
 				deviceId, device.Mac, device.Hostname, device.IPAddr, device.Comment)
 
-			metrics <- prometheus.MustNewConstMetric(i.streamUpBytesDesc, prometheus.GaugeValue, float64(device.TotalUp),
+			metrics <- prometheus.MustNewConstMetric(i.streamUpBytesDesc, prometheus.CounterValue, float64(device.TotalUp),
 				deviceId)
 
-			metrics <- prometheus.MustNewConstMetric(i.streamDownBytesDesc, prometheus.GaugeValue, float64(device.TotalDown),
+			metrics <- prometheus.MustNewConstMetric(i.streamDownBytesDesc, prometheus.CounterValue, float64(device.TotalDown),
 				deviceId)
 
 			metrics <- prometheus.MustNewConstMetric(i.streamUpSpeedDesc, prometheus.GaugeValue, float64(device.Upload),
@@ -197,13 +197,13 @@ func (i *IKuaiExporter) Collect(metrics chan<- prometheus.Metric) {
 	}
 
 	// Host metric
-	metrics <- prometheus.MustNewConstMetric(i.UpTimeDesc, prometheus.GaugeValue, float64(sysStat.Uptime),
+	metrics <- prometheus.MustNewConstMetric(i.UpTimeDesc, prometheus.CounterValue, float64(sysStat.Uptime),
 		"host")
 
-	metrics <- prometheus.MustNewConstMetric(i.streamUpBytesDesc, prometheus.GaugeValue, float64(sysStat.Stream.TotalUp),
+	metrics <- prometheus.MustNewConstMetric(i.streamUpBytesDesc, prometheus.CounterValue, float64(sysStat.Stream.TotalUp),
 		"host")
 
-	metrics <- prometheus.MustNewConstMetric(i.streamDownBytesDesc, prometheus.GaugeValue, float64(sysStat.Stream.TotalDown),
+	metrics <- prometheus.MustNewConstMetric(i.streamDownBytesDesc, prometheus.CounterValue, float64(sysStat.Stream.TotalDown),
 		"host")
 
 	metrics <- prometheus.MustNewConstMetric(i.streamUpSpeedDesc, prometheus.GaugeValue, float64(sysStat.Stream.Upload),
@@ -250,13 +250,13 @@ func (i *IKuaiExporter) interfaceMetrics(metrics chan<- prometheus.Metric, monit
 		metrics <- prometheus.MustNewConstMetric(i.UpDesc, prometheus.GaugeValue, float64(ifaceUp),
 			ifaceId)
 
-		metrics <- prometheus.MustNewConstMetric(i.UpTimeDesc, prometheus.GaugeValue, float64(ifaceUptime),
+		metrics <- prometheus.MustNewConstMetric(i.UpTimeDesc, prometheus.CounterValue, float64(ifaceUptime),
 			ifaceId)
 
-		metrics <- prometheus.MustNewConstMetric(i.streamUpBytesDesc, prometheus.GaugeValue, float64(iface.TotalUp),
+		metrics <- prometheus.MustNewConstMetric(i.streamUpBytesDesc, prometheus.CounterValue, float64(iface.TotalUp),
 			ifaceId)
 
-		metrics <- prometheus.MustNewConstMetric(i.streamDownBytesDesc, prometheus.GaugeValue, float64(iface.TotalDown),
+		metrics <- prometheus.MustNewConstMetric(i.streamDownBytesDesc, prometheus.CounterValue, float64(iface.TotalDown),
 			ifaceId)
 
 		metrics <- prometheus.MustNewConstMetric(i.streamUpSpeedDesc, prometheus.GaugeValue, float64(iface.Upload),
