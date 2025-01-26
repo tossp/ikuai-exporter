@@ -26,3 +26,12 @@ make HOST_OPT="--ikuai=http://192.168.9.1 --ikuaiusername=test --ikuaipassword=t
 ```
 
 
+### 致谢
+
+[jakeslee/ikuai-exporter](https://github.com/jakeslee/ikuai-exporter)
+
+[NERVEbing/ikuai-exporter](https://github.com/NERVEbing/ikuai-exporter)
+
+### License
+
+[License MIT](LICENSE)
