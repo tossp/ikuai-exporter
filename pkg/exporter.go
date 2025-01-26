@@ -159,9 +159,9 @@ func (i *IKuaiExporter) Collect(metrics chan<- prometheus.Metric) {
 				devices[deviceId].Upload += device.Upload
 				devices[deviceId].Download += device.Download
 				devices[deviceId].ConnectNum += device.ConnectNum
-				devices[deviceId].IPAddr += "|" + device.IPAddr
+				// devices[deviceId].IPAddr += "|" + device.IPAddr
 			} else {
-				devices[deviceId] = &action.LanDeviceInfo{Mac: device.Mac, Hostname: device.Hostname, IPAddr: device.IPAddr, Comment: device.Comment}
+				devices[deviceId] = &device
 			}
 		}
 
