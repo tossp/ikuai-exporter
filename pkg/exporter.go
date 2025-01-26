@@ -39,6 +39,12 @@ type IKuaiExporter struct {
 	streamUpSpeedDesc   *prometheus.Desc // 流量上行速度
 	streamDownSpeedDesc *prometheus.Desc // 流量上行速度
 	connCountDesc       *prometheus.Desc // 连接数指标
+
+	// 其他
+	dhcpAddrpoolCountDesc *prometheus.Desc // DHCP 地址池
+	appFlowHistogramDesc  *prometheus.Desc // 流量分布
+	appFlowBuckets        []float64        // 自定义桶分布
+
 }
 
 func NewIKuaiExporter(kuai *ikuai.IKuai) *IKuaiExporter {
@@ -78,7 +84,27 @@ func NewIKuaiExporter(kuai *ikuai.IKuai) *IKuaiExporter {
 			[]string{"id"}, nil),
 		connCountDesc: prometheus.NewDesc("ikuai_network_conn_count", "连接数",
 			[]string{"id"}, nil),
+		dhcpAddrpoolCountDesc: prometheus.NewDesc("ikuai_dhcp_addrpool_num", "DHCP 地址池剩余数量",
+			[]string{}, nil),
+		// appFlowDesc: prometheus.NewDesc("ikuai_app_flow", "最近30分钟流量分布",
+		// 	[]string{"category"}, nil),
+		appFlowHistogramDesc: prometheus.NewDesc(
+			"ikuai_app_flow_histogram",
+			"Histogram of app flow distribution in the last 30 minutes",
+			[]string{"category"}, nil,
+		),
+		appFlowBuckets: prometheus.LinearBuckets(1*1024*1024, 5*1024*1024, 10),
 	}
+}
+
+func (i *IKuaiExporter) generateAppFlowBucketsCounts(value float64) map[float64]uint64 {
+	bucketCounts := make(map[float64]uint64)
+	for _, bucket := range i.appFlowBuckets {
+		if value <= bucket {
+			bucketCounts[bucket]++
+		}
+	}
+	return bucketCounts
 }
 
 func (i *IKuaiExporter) Describe(descs chan<- *prometheus.Desc) {
@@ -99,6 +125,8 @@ func (i *IKuaiExporter) Describe(descs chan<- *prometheus.Desc) {
 	descs <- i.streamUpSpeedDesc
 	descs <- i.streamDownSpeedDesc
 	descs <- i.connCountDesc
+	descs <- i.dhcpAddrpoolCountDesc
+	descs <- i.appFlowHistogramDesc
 }
 
 func (i *IKuaiExporter) Collect(metrics chan<- prometheus.Metric) {
@@ -142,6 +170,24 @@ func (i *IKuaiExporter) Collect(metrics chan<- prometheus.Metric) {
 		float64(sysStat.Memory.Total-sysStat.Memory.Available))
 	metrics <- prometheus.MustNewConstMetric(i.memCachedDesc, prometheus.GaugeValue, float64(sysStat.Memory.Cached))
 	metrics <- prometheus.MustNewConstMetric(i.memBuffersDesc, prometheus.GaugeValue, float64(sysStat.Memory.Buffers))
+
+	metrics <- prometheus.MustNewConstMetric(i.dhcpAddrpoolCountDesc, prometheus.GaugeValue, float64(stat.Data.DhcpAddrpoolNum.AvailableNum))
+
+	if len(stat.Data.AppFlow.AppFlow) > 0 {
+		for name, value := range stat.Data.AppFlow.AppFlow[0] {
+			// 排除不需要的字段或处理特殊字段
+			if name == "Total" {
+				continue
+			}
+			metrics <- prometheus.MustNewConstHistogram(
+				i.appFlowHistogramDesc,
+				uint64(value),
+				float64(value),
+				i.generateAppFlowBucketsCounts(float64(value)),
+				name,
+			)
+		}
+	}
 
 	lanDevice, err := i.ikuai.ShowMonitorLan()
 
