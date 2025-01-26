@@ -120,7 +120,7 @@ func (i *IKuaiExporter) Collect(metrics chan<- prometheus.Metric) {
 
 	sysStat := stat.Data.SysStat
 
-	metrics <- prometheus.MustNewConstMetric(i.versionDesc, prometheus.GaugeValue, 1,
+	metrics <- prometheus.MustNewConstMetric(i.versionDesc, prometheus.CounterValue, 1,
 		sysStat.Verinfo.Version,
 		sysStat.Verinfo.Arch,
 		sysStat.Verinfo.Verstring)
@@ -166,7 +166,7 @@ func (i *IKuaiExporter) Collect(metrics chan<- prometheus.Metric) {
 		}
 
 		for deviceId, device := range devices {
-			metrics <- prometheus.MustNewConstMetric(i.lanDeviceDesc, prometheus.GaugeValue, 1,
+			metrics <- prometheus.MustNewConstMetric(i.lanDeviceDesc, prometheus.CounterValue, 1,
 				deviceId, device.Mac, device.Hostname, device.IPAddr, device.Comment)
 
 			metrics <- prometheus.MustNewConstMetric(i.streamUpBytesDesc, prometheus.GaugeValue, float64(device.TotalUp),
