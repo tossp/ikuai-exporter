@@ -1,0 +1,12 @@
+scrape_configs:
+  - job_name: 'ikuai_exporter'
+    scrape_interval: 10s
+    scrape_timeout: 2s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - target_label: __address__
+        replacement: ikuai-exporter:9090 # 容器地址
+    static_configs:
+      - targets:
+          - 192.168.9.1 # 实例名称不该
