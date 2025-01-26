@@ -16,8 +16,13 @@ docker pull tossp/ikuai-exporter:latest
 | IK_USER | 爱快登录用户 |
 | IK_PWD  | 爱快登录密码 |
 
+2k 分辨率
+1. https://grafana.com/grafana/dashboards/22756
+1. https://raw.githubusercontent.com/tossp/ikuai-exporter/refs/heads/main/examples/grafana/2k.json
 
 ### 开发调试
 ```shell
 make HOST_OPT="--ikuai=http://192.168.9.1 --ikuaiusername=test --ikuaipassword=test123456 --debug"
 ```
+
+
