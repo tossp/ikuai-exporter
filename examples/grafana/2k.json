@@ -347,7 +347,7 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 4,
+        "w": 5,
         "x": 6,
         "y": 0
       },
@@ -432,8 +432,8 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 3,
-        "x": 10,
+        "w": 2,
+        "x": 11,
         "y": 0
       },
       "id": 2,
@@ -1064,8 +1064,8 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 3,
-        "x": 10,
+        "w": 2,
+        "x": 11,
         "y": 3
       },
       "id": 4,
@@ -1125,7 +1125,7 @@
           "decimals": 2,
           "fieldMinMax": false,
           "mappings": [],
-          "unit": "binbps"
+          "unit": "bytes"
         },
         "overrides": []
       },
@@ -1181,7 +1181,7 @@
           "useBackend": false
         }
       ],
-      "title": "流量分布",
+      "title": "最近30分钟流量分布",
       "transformations": [
         {
           "id": "renameByRegex",
@@ -1417,7 +1417,7 @@
           "refId": "C"
         }
       ],
-      "title": "Devices",
+      "title": "设备流量 - 实时",
       "transformations": [
         {
           "id": "merge",
@@ -1771,7 +1771,6 @@
           "decimals": 2,
           "fieldMinMax": false,
           "mappings": [],
-          "max": 102400,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -2135,13 +2134,13 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "ikuai ",
+  "title": "ikuai",
   "uid": "IhtQfGvZ4k",
-  "version": 42,
+  "version": 50,
   "weekStart": ""
 }
