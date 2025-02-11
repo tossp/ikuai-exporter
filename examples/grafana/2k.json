@@ -1292,7 +1292,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "upload"
+              "options": "上传速度"
             },
             "properties": [
               {
@@ -1306,7 +1306,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "download"
+              "options": "Value #B"
             },
             "properties": [
               {
@@ -1320,7 +1320,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "connection"
+              "options": "Value #C"
             },
             "properties": [
               {
@@ -1366,7 +1366,7 @@
         "sortBy": [
           {
             "desc": true,
-            "displayName": "connection"
+            "displayName": "连接数"
           }
         ]
       },
@@ -1432,6 +1432,7 @@
               "instance": true,
               "job": true
             },
+            "includeByName": {},
             "indexByName": {
               "Time": 0,
               "Value #A": 9,
@@ -1446,14 +1447,16 @@
               "mac": 6
             },
             "renameByName": {
-              "Value #A": "upload",
-              "Value #B": "download",
-              "Value #C": "connection",
-              "hostname": "",
+              "Value #A": "上传速度",
+              "Value #B": "下载速度",
+              "Value #C": "连接数",
+              "comment": "备注",
+              "hostname": "主机名",
               "id": "",
               "instance": "",
-              "ip_addr": "ip",
-              "job": ""
+              "ip_addr": "IP地址",
+              "job": "",
+              "mac": "物理地址"
             }
           }
         }
@@ -1488,13 +1491,13 @@
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 1,
-            "pointSize": 5,
+            "pointSize": 3,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "never",
+            "showPoints": "auto",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -1511,10 +1514,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
@@ -1523,8 +1522,8 @@
         "overrides": [
           {
             "matcher": {
-              "id": "byName",
-              "options": "netin"
+              "id": "byFrameRefID",
+              "options": "B"
             },
             "properties": [
               {
@@ -1551,7 +1550,9 @@
           ],
           "displayMode": "table",
           "placement": "right",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Name",
+          "sortDesc": false
         },
         "tooltip": {
           "mode": "single",
@@ -1577,7 +1578,7 @@
             "uid": "${dsIkuai}"
           },
           "editorMode": "code",
-          "expr": "ikuai_network_recv_kbytes_per_second{id=\"host\", job=\"$jobName\",instance=\"$instance\"}*-1",
+          "expr": "ikuai_network_recv_kbytes_per_second{id=\"host\", job=\"$jobName\",instance=\"$instance\"}",
           "hide": false,
           "legendFormat": "⏬",
           "range": true,
@@ -1620,11 +1621,11 @@
               "fill": "solid"
             },
             "lineWidth": 1,
-            "pointSize": 5,
+            "pointSize": 3,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "never",
+            "showPoints": "auto",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -1642,10 +1643,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
@@ -1654,8 +1651,8 @@
         "overrides": [
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": ".*netin"
+              "id": "byFrameRefID",
+              "options": "B"
             },
             "properties": [
               {
@@ -1683,7 +1680,7 @@
           "placement": "right",
           "showLegend": true,
           "sortBy": "Name",
-          "sortDesc": true
+          "sortDesc": false
         },
         "tooltip": {
           "mode": "multi",
@@ -1711,7 +1708,7 @@
             "uid": "${DS_TSNET}"
           },
           "editorMode": "code",
-          "expr": "(ikuai_network_recv_kbytes_per_second{id=~\"iface/.*\",job=\"$jobName\",instance=\"$instance\"}*-1 and on(id) ikuai_uptime > 0) * on (id) group_left(interface, comment) ikuai_iface_info",
+          "expr": "(ikuai_network_recv_kbytes_per_second{id=~\"iface/.*\",job=\"$jobName\",instance=\"$instance\"} and on(id) ikuai_uptime > 0) * on (id) group_left(interface, comment) ikuai_iface_info",
           "hide": false,
           "legendFormat": "{{comment}}({{interface}})⏬",
           "range": true,
@@ -1754,12 +1751,12 @@
               "fill": "solid"
             },
             "lineWidth": 1,
-            "pointSize": 5,
+            "pointSize": 3,
             "scaleDistribution": {
               "type": "linear"
             },
             "showPoints": "auto",
-            "spanNulls": true,
+            "spanNulls": false,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -1860,12 +1857,12 @@
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineStyle": {
               "fill": "solid"
             },
             "lineWidth": 1,
-            "pointSize": 4,
+            "pointSize": 3,
             "scaleDistribution": {
               "type": "linear"
             },
@@ -1957,7 +1954,7 @@
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
-            "axisColorMode": "text",
+            "axisColorMode": "series",
             "axisLabel": "",
             "axisPlacement": "left",
             "barAlignment": 0,
@@ -1971,16 +1968,16 @@
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineStyle": {
               "fill": "solid"
             },
             "lineWidth": 1,
-            "pointSize": 5,
+            "pointSize": 3,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "never",
+            "showPoints": "auto",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -1991,6 +1988,7 @@
             }
           },
           "decimals": 2,
+          "fieldMinMax": true,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1998,10 +1996,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
@@ -2010,8 +2004,8 @@
         "overrides": [
           {
             "matcher": {
-              "id": "byRegexp",
-              "options": ".*recv"
+              "id": "byFrameRefID",
+              "options": "B"
             },
             "properties": [
               {
@@ -2040,7 +2034,7 @@
           "placement": "right",
           "showLegend": true,
           "sortBy": "Name",
-          "sortDesc": true
+          "sortDesc": false
         },
         "tooltip": {
           "mode": "multi",
@@ -2055,7 +2049,7 @@
             "uid": "${DS_TSNET}"
           },
           "editorMode": "code",
-          "expr": "ikuai_network_send_kbytes_per_second{id=~\"iface/.*\", job=\"$jobName\",instance=\"$instance\"} * on (id) group_left(interface, comment) ikuai_iface_info",
+          "expr": "ikuai_network_send_kbytes_per_second{id=~\"iface/.*\", job=\"$jobName\",instance=\"$instance\"}  * on (id) group_left(comment,interface) (max(ikuai_iface_info) by (id, comment,interface))",
           "legendFormat": "{{comment}}({{interface}})⏫",
           "range": true,
           "refId": "A"
@@ -2066,14 +2060,14 @@
             "uid": "${dsIkuai}"
           },
           "editorMode": "code",
-          "expr": "ikuai_network_recv_kbytes_per_second{id=~\"iface/.*\",job=\"$jobName\",instance=\"$instance\"} * on (id) group_left(interface, comment) ikuai_iface_info",
+          "expr": "ikuai_network_recv_kbytes_per_second{id=~\"iface/.*\",job=\"$jobName\",instance=\"$instance\"} * on (id) group_left(comment,interface) (max(ikuai_iface_info) by (id, comment,interface))",
           "hide": false,
           "legendFormat": "{{comment}}({{interface}})⏬",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "线路流量 - 实时",
+      "title": "链路流量 - 实时",
       "type": "timeseries"
     }
   ],
@@ -2134,13 +2128,13 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "ikuai",
   "uid": "IhtQfGvZ4k",
-  "version": 50,
+  "version": 67,
   "weekStart": ""
 }
