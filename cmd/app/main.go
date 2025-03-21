@@ -18,6 +18,7 @@ type Config struct {
 	IkuaiPassword string `arg:"env:IK_PWD" help:"iKuai password" default:"test123"`
 	Debug         bool   `arg:"env:DEBUG" help:"iKuai 开启 debug 日志" default:"false"`
 	InsecureSkip  bool   `arg:"env:SKIP_TLS_VERIFY" help:"是否跳过 iKuai 证书验证" default:"true"`
+	Listen        string `arg:"env:LISTEN" help:"监听地址和端口" default:":9090"`
 }
 
 var (
@@ -55,7 +56,7 @@ func main() {
 
 	http.Handle("/metrics", promhttp.HandlerFor(registry, promhttp.HandlerOpts{Registry: registry}))
 
-	log.Printf("exporter %v started at :9090", version)
+	log.Printf("exporter %v started at %s", version, config.Listen)
 
-	log.Fatal(http.ListenAndServe(":9090", nil))
+	log.Fatal(http.ListenAndServe(config.Listen, nil))
 }
