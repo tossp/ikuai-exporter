@@ -18,6 +18,7 @@ docker pull tossp/ikuai-exporter:1.2
 | IK_URL  | 爱快地址   |
 | IK_USER | 爱快登录用户 |
 | IK_PWD  | 爱快登录密码 |
+| LISTEN  | 监听地址    |
 
 2k 分辨率
 1. https://grafana.com/grafana/dashboards/22756

@@ -311,7 +311,7 @@ func (i *IKuaiExporter) interfaceMetrics(metrics chan<- prometheus.Metric, monit
 		metrics <- prometheus.MustNewConstMetric(i.streamDownSpeedDesc, prometheus.GaugeValue, float64(iface.Download),
 			ifaceId)
 
-		ifaceConn, nErr := strconv.ParseInt(iface.ConnectNum, 10, 8)
+		ifaceConn, nErr := strconv.ParseInt(iface.ConnectNum, 10, 32)
 		if nErr != nil {
 			ifaceConn = 0
 		}
