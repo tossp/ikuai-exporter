@@ -3,7 +3,7 @@ module github.com/tossp/ikuai-exporter
 go 1.23.5
 
 require (
-	github.com/alexflint/go-arg v1.5.1
+	github.com/alexflint/go-arg v1.6.0
 	github.com/prometheus/client_golang v1.20.5
 	github.com/tossp/ikuai v1.4.0
 )
